@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournez et Gagnez - Matériel Soudure</title>
+     <link rel="icon" href="MS-fav.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #df0000 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        h1 {
+            color: #df0000;
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: 900;
+            font-family: 'Arial Black', 'Arial Bold', sans-serif;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: 900;
+            font-family: 'Arial Black', 'Arial Bold', sans-serif;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #df0000 0%, #8b0000 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+
+        .btn-avis{
+            background: white;
+            color: #df0000;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px;
+            border: 2px solid #df0000;
+        }
+
+        .btn-avis:hover {
+            transform: scale(1.05);
+            background: #df0000;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(223, 0, 0, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .rules-list {
+            text-align: left;
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        .rules-list li {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .wheel-container {
+            position: relative;
+            margin: 30px auto;
+            display: inline-block;
+            max-width: 100%;
+            overflow: visible;
+        }
+
+        #canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            #canvas {
+                width: 100%;
+                height: auto;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .wheel-container {
+                margin: 20px auto;
+            }
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #df0000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .result-box h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .result-box p {
+            color: white;
+        }
+
+        .result-box strong {
+            color: white;
+        }
+
+        .google-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #df0000 0%, #8b0000 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+        }
+
+        .google-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(223, 0, 0, 0.4);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            position: absolute;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        #confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="confetti-container"></div>
+    <div class="container">
+        <!-- Écran d'accueil -->
+        <div id="welcome-screen" class="screen active">
+            <img src="MS-logo.png" alt="Logo Matériel Soudure" class="logo">
+            <h2>Bienvenue !</h2>
+            <p>Tentez votre chance et gagnez des cadeaux exclusifs !</p>
+            <button class="btn" onclick="showRules()">Jouer</button>
+        </div>
+
+        <!-- Écran des règles -->
+        <div id="rules-screen" class="screen">
+            <h2>📋 Règles du jeu</h2>
+            <ul class="rules-list">
+                <li>✍️ Laissez un avis Google sur notre page entreprise</li>
+                <li>📸 Faites une capture d'écran de votre avis</li>
+                <li>🎯 Montrez la capture à notre personnel</li>
+                <li>🎡 Tournez la roue pour découvrir votre gain</li>
+            </ul>
+            <p><strong>Important :</strong> Vous devez présenter la capture d'écran de votre avis pour valider votre participation !</p>
+            <button class="btn-avis" onclick="showConfirmation()">J'ai laissé mon avis</button>
+            <br/>
+            <a href="https://g.page/r/CcOzsvgu90sVEAE/review?utm_source=gbp&utm_medium=reviews&utm_campaign=qr" target="_blank" class="google-link">
+                ⭐ Laisser un avis Google
+            </a>
+        </div>
+
+        <!-- Écran de confirmation -->
+        <div id="confirmation-screen" class="screen">
+            <h2>✅ Confirmation</h2>
+            <p>Merci d'avoir laissé votre avis !</p>
+            <p><strong>Veuillez présenter la capture d'écran de votre avis Google à un membre de notre équipe avant de tourner la roue.</strong></p>
+            <p style="color: #df0000; font-weight: bold;">⚠️ Sans preuve de l'avis, vous ne pourrez pas récupérer votre gain.</p>
+            <button class="btn" onclick="showWheel()">Personnel a validé - Tourner la roue</button>
+        </div>
+
+        <!-- Écran de la roue -->
+        <div id="wheel-screen" class="screen">
+            <h2>🎡 Tournez la roue !</h2>
+            <div class="wheel-container">
+                <canvas id="canvas" width="400" height="400"></canvas>
+            </div>
+            <button class="btn" id="spin-btn" onclick="spinWheel()">Lancer la roue</button>
+        </div>
+
+        <!-- Écran de résultat -->
+        <div id="result-screen" class="screen">
+            <div class="result-box">
+                <h3 id="result-title">🎊 Félicitations !</h3>
+                <p id="result-text">Vous avez gagné : <strong id="prize"></strong></p>
+            </div>
+            <p id="staff-instruction">Présentez cet écran à notre personnel pour récupérer votre gain !</p>
+            <button class="btn btn-secondary" onclick="resetGame()">Rejouer</button>
+        </div>
+    </div>
+
+    <script>
+        // Tracking des événements (Google Analytics ou LocalStorage)
+        function trackEvent(eventName) {
+            const count = parseInt(localStorage.getItem(eventName) || '0') + 1;
+            localStorage.setItem(eventName, count.toString());
+            console.log(`Event tracked: ${eventName} (Total: ${count})`);
+        }
+
+        window.addEventListener('load', () => {
+            trackEvent('qr_scans');
+            displayStats();
+        });
+
+        function displayStats() {
+            const scans = localStorage.getItem('qr_scans') || '0';
+            const spins = localStorage.getItem('wheel_spins') || '0';
+            console.log(`=== STATISTIQUES ===`);
+            console.log(`QR Codes scannés: ${scans}`);
+            console.log(`Roues tournées: ${spins}`);
+            console.log(`===================`);
+        }
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        // Initialisation des variables
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        // --- 1. CONFIGURATION DES PRIX (Total = 100) ---
+        const prizes = [
+            { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 26 },
+            { text: 'Tee-shirt 👕', winning: true, color: '#df0000', icon: '🏆', probability: 2 },
+            { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 26 },
+            { text: 'Casquette 🧢', winning: true, color: '#df0000', icon: '🏆', probability: 0 },
+            { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 26 },
+            { text: 'Goodies 🎉', winning: true, color: '#df0000', icon: '🏆', probability: 20 }
+        ];
+
+        function drawWheel(rotation = 0) {
+            const isMobile = window.innerWidth <= 768;
+            const size = isMobile ? Math.min(window.innerWidth - 40, 350) : 400;
+            
+            if (canvas.width !== size) {
+                canvas.width = size;
+                canvas.height = size;
+            }
+
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = (size / 2) - 30;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(rotation);
+
+            const numSegments = prizes.length;
+            const anglePerSegment = (Math.PI * 2) / numSegments;
+
+            for (let i = 0; i < numSegments; i++) {
+                const startAngle = i * anglePerSegment;
+                const endAngle = startAngle + anglePerSegment;
+
+                // Segment
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = prizes[i].color;
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Texte
+                ctx.save();
+                ctx.rotate(startAngle + anglePerSegment / 2);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 40px Arial';
+                ctx.fillText(prizes[i].icon, radius * 0.65, 0);
+                ctx.restore();
+            }
+
+            // Cercle central
+            ctx.beginPath();
+            ctx.arc(0, 0, 50, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.strokeStyle = '#df0000';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            ctx.fillStyle = '#df0000';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('SPIN', 0, 0);
+
+            ctx.restore();
+            drawPointer();
+        }
+
+        function drawPointer() {
+            const isMobile = window.innerWidth <= 768;
+            const size = isMobile ? Math.min(window.innerWidth - 40, 350) : 400;
+            const centerX = size / 2;
+            
+            ctx.save();
+            ctx.translate(centerX, 30);
+            
+            ctx.beginPath();
+            ctx.arc(0, 0, 15, 0, Math.PI * 2);
+            ctx.fillStyle = '#df0000';
+            ctx.fill();
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(-15, 15);
+            ctx.lineTo(15, 15);
+            ctx.lineTo(0, 45);
+            ctx.closePath();
+            ctx.fillStyle = '#df0000';
+            ctx.fill();
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        function getWeightedWinnerIndex() {
+            let totalWeight = 0;
+            for (let i = 0; i < prizes.length; i++) {
+                totalWeight += prizes[i].probability;
+            }
+
+            let random = Math.random() * totalWeight;
+
+            for (let i = 0; i < prizes.length; i++) {
+                random -= prizes[i].probability;
+                if (random <= 0) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.disabled = true;
+
+            trackEvent('wheel_spins');
+
+            // 1. On détermine le gagnant
+            const winningIndex = getWeightedWinnerIndex();
+            
+            // 2. Calculs des angles
+            const segmentAngle = (Math.PI * 2) / prizes.length;
+            
+            // Le pointeur est en haut (270° ou 3PI/2)
+            const pointerAngle = 3 * Math.PI / 2;
+            
+            // On vise le CENTRE de la case gagnante
+            // Formule : Angle Pointeur - (Index * TailleSegment) - (Demi-Segment pour centrer)
+            let targetBaseAngle = pointerAngle - (winningIndex * segmentAngle) - (segmentAngle / 2);
+            
+            // On ajoute un petit aléatoire (varie de +/- 40% de la part) pour le réalisme
+            const randomOffset = (Math.random() - 0.5) * (segmentAngle * 0.8);
+            targetBaseAngle += randomOffset;
+
+            // --- NOUVELLE LOGIQUE DE ROTATION ---
+            
+            // On veut savoir où on est actuellement dans le cercle (entre 0 et 360°)
+            // Le modulo % permet de garder le reste de la division par un tour complet
+            const currentPosition = currentRotation % (Math.PI * 2);
+            
+            // On calcule la distance qu'il reste à parcourir pour atteindre la cible
+            let distanceToGo = targetBaseAngle - currentPosition;
+            
+            // Si la distance est négative (la cible est "derrière"), on ajoute un tour pour qu'elle soit "devant"
+            // On s'assure ainsi de toujours tourner dans le sens horaire (positif)
+            while (distanceToGo < 0) {
+                distanceToGo += (Math.PI * 2);
+            }
+            
+            // ICI : On ajoute le nombre de tours supplémentaires désirés (ex: 8 tours)
+            // Plus le chiffre est grand, plus ça tourne longtemps
+            const extraSpins = 8; 
+            distanceToGo += (Math.PI * 2 * extraSpins);
+            
+            // La destination finale est la position actuelle + la distance calculée
+            const finalTargetRotation = currentRotation + distanceToGo;
+
+            // --- FIN CALCULS ---
+
+            // J'ai augmenté un peu la durée (6s) pour que les 8 tours ne soient pas trop rapides
+            const duration = 6000; 
+            const startTime = Date.now();
+            const startRotation = currentRotation;
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Effet de ralentissement (Ease Out)
+                const easedProgress = easeOutCubic(progress);
+
+                currentRotation = startRotation + (finalTargetRotation - startRotation) * easedProgress;
+                drawWheel(currentRotation);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    isSpinning = false;
+                    showResult(winningIndex);
+                }
+            }
+
+            animate();
+        }
+
+        // CORRECTION ICI : La fonction accepte l'index forcé
+        function showResult(forcedIndex) {
+            let index = forcedIndex;
+
+            // Sécurité : si jamais la fonction est appelée sans argument (ancien code)
+            if (index === undefined) {
+                 const normalizedRotation = ((currentRotation % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2);
+                 const segmentAngle = (Math.PI * 2) / prizes.length;
+                 const pointerAngle = (3 * Math.PI / 2);
+                 const actualPointerPosition = (pointerAngle - normalizedRotation + (Math.PI * 2)) % (Math.PI * 2);
+                 index = Math.floor(actualPointerPosition / segmentAngle) % prizes.length;
+            }
+            
+            const prize = prizes[index];
+            
+            const resultTitle = document.getElementById('result-title');
+            const resultText = document.getElementById('result-text');
+            const staffInstruction = document.getElementById('staff-instruction');
+
+            if (prize.winning) {
+                resultTitle.textContent = '🎊 Félicitations !';
+                resultText.innerHTML = `Vous avez gagné : <strong>${prize.text}</strong>`;
+                staffInstruction.style.display = 'block';
+                launchConfetti();
+            } else {
+                resultTitle.textContent = '😢 Dommage !';
+                resultText.innerHTML = `Vous avez obtenu : <strong>${prize.text}</strong><br>Mais merci d'avoir participé !`;
+                staffInstruction.style.display = 'none';
+            }
+
+            setTimeout(() => {
+                showScreen('result-screen');
+            }, 500);
+        }
+
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#df0000', '#ff0000', '#ffd700', '#ff69b4', '#00ff00', '#00bfff', '#ff4500'];
+            const confettiCount = 100;
+
+            for (let i = 0; i < confettiCount; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    confetti.style.animationDelay = '0s';
+                    
+                    container.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 4000);
+                }, i * 30);
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showRules() {
+            showScreen('rules-screen');
+        }
+
+        function showConfirmation() {
+            showScreen('confirmation-screen');
+        }
+
+        function showWheel() {
+            showScreen('wheel-screen');
+            drawWheel(currentRotation);
+        }
+
+        function resetGame() {
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.disabled = false;
+            // On ne reset pas la rotation pour éviter les sauts visuels
+            isSpinning = false;
+            showScreen('welcome-screen');
+        }
+
+        // Initialisation
+        drawWheel(currentRotation);
+
+        window.addEventListener('resize', () => {
+            if (!isSpinning) {
+                drawWheel(currentRotation);
+            }
+        });
+    </script>
+</body>
+</html>
