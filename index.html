@@ -318,12 +318,12 @@
         let currentRotation = 0;
         let isSpinning = false;
 
-        // --- 1. CONFIGURATION DES PRIX (Total = 100) ---
+        // CONFIGURATION DES PRIX (Total = 100)
         const prizes = [
             { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 25 },
             { text: 'Tee-shirt 👕', winning: true, color: '#df0000', icon: '🏆', probability: 3 },
             { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 25 },
-            { text: 'Casquette 🧢', winning: true, color: '#df0000', icon: '🏆', probability: 0 },
+            { text: 'Casquette 🧢', winning: true, color: '#df0000', icon: '🏆', probability: 0 }, // Pas en stock pour le moment
             { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 25 },
             { text: 'Goodies 🎉', winning: true, color: '#df0000', icon: '🏆', probability: 22 }
         ];
