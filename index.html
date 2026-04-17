@@ -318,6 +318,16 @@
         let currentRotation = 0;
         let isSpinning = false;
 
+        const prizes = [
+            { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 10 },
+            { text: 'Carambar 🍬', winning: true, color: '#df0000', icon: '🏆', probability: 23 },
+            { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 10 },
+            { text: 'Carambar 🍬', winning: true, color: '#df0000', icon: '🏆', probability: 23 },
+            { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 10 },
+            { text: 'Carambar 🍬', winning: true, color: '#df0000', icon: '🏆', probability: 24 }
+        ];
+
+        /*
         // CONFIGURATION DES PRIX (Total = 100)
         const prizes = [
             { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 10 },
@@ -327,6 +337,7 @@
             { text: 'Perdu 😢', winning: false, color: '#1a1a1a', icon: '❌', probability: 10 },
             { text: 'Goodies 🎉', winning: true, color: '#df0000', icon: '🏆', probability: 40 }
         ];
+        */
 
         function drawWheel(rotation = 0) {
             const isMobile = window.innerWidth <= 768;
